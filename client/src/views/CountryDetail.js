@@ -12,14 +12,15 @@ import Paper from "@material-ui/core/Paper";
 
 export default function CountryDetail({ searchCountry }) {
   const [country, setCountry] = useState([]);
-  const [err, setErr] = useState("");
+  // const [err, setErr] = useState("");
   useEffect(() => {
     axios({
       method: "GET",
-      url: "https://covid-19-coronavirus-statistics.p.rapidapi.com/v1/stats",
+      url:
+        "https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php",
       headers: {
         "content-type": "application/octet-stream",
-        "x-rapidapi-host": "covid-19-coronavirus-statistics.p.rapidapi.com",
+        "x-rapidapi-host": "coronavirus-monitor.p.rapidapi.com",
         "x-rapidapi-key": "3a01be6e25msh75a6c8a146c41d5p18acf7jsn5846c5ec8a46"
       },
       params: {
@@ -27,16 +28,8 @@ export default function CountryDetail({ searchCountry }) {
       }
     })
       .then(response => {
-        setErr("");
-        if (
-          response.data.message ===
-          "Country not found. Returning all stats. Please use a country name found in the data property."
-        ) {
-          setErr("Country not found. Case-sensitive.Please try again!");
-        }
-        console.log("RES:" + response.data.message);
-        const newCountry = response.data.data.covid19Stats;
-        setCountry(newCountry);
+        console.log(response.data.latest_stat_by_country[0]);
+        setCountry(response.data.latest_stat_by_country[0]);
       })
       .catch(error => {
         console.log(error);
@@ -46,54 +39,116 @@ export default function CountryDetail({ searchCountry }) {
 
   return (
     <div>
-      {err === "Country not found. Case-sensitive.Please try again!" ? (
-        <p style={{ color: "red", fontWeight: "bold" }}>{err}</p>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table size="small" aria-label="a dense table">
-            <TableHead>
-              <TableRow>
-                <TableCell>City</TableCell>
-                <TableCell align="right">Province</TableCell>
-                <TableCell align="right">Country</TableCell>
-                <TableCell align="right">Confirm</TableCell>
-                <TableCell align="right">Death</TableCell>
-                <TableCell align="right">recovered</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {country.map((c, i) => (
-                <TableRow key={i}>
-                  <TableCell
-                    style={{ fontWeight: "bold" }}
-                    component="th"
-                    scope="row"
-                  >
-                    {c.city}
-                  </TableCell>
-                  <TableCell align="right">{c["province"]}</TableCell>
-                  <TableCell align="right">{c["country"]}</TableCell>
-                  <TableCell style={{ color: "red" }} align="right">
-                    {c["confirmed"]}
-                  </TableCell>
-                  <TableCell
-                    style={{ color: "red", fontWeight: "bold" }}
-                    align="right"
-                  >
-                    {c["deaths"]}
-                  </TableCell>
-                  <TableCell
-                    style={{ color: "green", fontWeight: "bold" }}
-                    align="right"
-                  >
-                    {c["recovered"]}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      <TableContainer component={Paper}>
+        <Table size="small" aria-label="a dense table">
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <span role="img" aria-label="emoji">
+                  💠
+                </span>
+                Country
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  ⚠️
+                </span>
+                New Cases
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  🤧
+                </span>
+                Active Cases
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  🤒
+                </span>
+                Critical
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  💪
+                </span>
+                Recovered
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  😵
+                </span>
+                Deaths
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  😱
+                </span>
+                Total Cases
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  ☠️
+                </span>
+                Total Deaths
+              </TableCell>
+              <TableCell align="right">
+                <span role="img" aria-label="emoji">
+                  😷
+                </span>
+                Cases/1m
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell
+                style={{ fontWeight: "bold" }}
+                component="th"
+                scope="row"
+              >
+                {country.country_name}
+              </TableCell>
+              <TableCell
+                style={{ color: "red", fontWeight: "bold" }}
+                align="right"
+              >
+                {country.new_cases}
+              </TableCell>
+              <TableCell style={{ color: "red" }} align="right">
+                {country.active_cases}
+              </TableCell>
+              <TableCell style={{ color: "red" }} align="right">
+                {country.serious_critical}
+              </TableCell>
+              <TableCell
+                style={{ color: "green", fontWeight: "bold" }}
+                align="right"
+              >
+                {country.total_recovered}
+              </TableCell>
+              <TableCell
+                style={{ color: "red", fontWeight: "bold" }}
+                align="right"
+              >
+                {country.new_deaths}
+              </TableCell>
+              <TableCell align="right">{country.total_cases}</TableCell>
+              <TableCell
+                style={{ color: "red", fontWeight: "bold" }}
+                align="right"
+              >
+                {country.total_deaths}
+              </TableCell>
+              <TableCell
+                style={{ color: "red", fontWeight: "bold" }}
+                align="right"
+              >
+                {country.total_cases_per1m}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
